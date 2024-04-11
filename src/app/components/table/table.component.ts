@@ -1,5 +1,6 @@
-import { Component, Input, OnChanges } from '@angular/core';
-import { ITableData } from 'src/Interfaces/ITableData';
+import { Component, Input, OnChanges, inject } from '@angular/core';
+import { ITableData } from 'src/app/Interfaces/ITableData';
+import { SearchService } from 'src/app/services/search.service';
 import { columns } from 'src/app/types/column';
 
 @Component({
@@ -12,10 +13,40 @@ export class TableComponent implements OnChanges {
   @Input() sortDirection: 'asc' | 'desc' = 'asc';
   @Input() data: ITableData[] = [];
 
-  ngOnChanges(): void {
+  searchService = inject(SearchService);
+
+  // Store the data to be used when searching
+  storedData: ITableData[] = [];
+
+  ngOnInit(): void {    
+    this.searchNameServiceSubscribe();
+    this.storedData = this.data;
+  }
+
+  ngOnChanges(): void {    
+    this.storedData = this.data;
+  }  
+
+  // Subscribe to the search service
+  private searchNameServiceSubscribe() {
+    this.searchService.searchValue.subscribe((name: string) => {
+      this.nameFilter(name);
+    });  
+  }
+
+  // Get the sort direction, column and sort the data
+  sortTable(sortColumn: columns): void {
+    if (this.sortColumn === sortColumn) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = sortColumn;
+      this.sortDirection = 'asc';
+    }
+
     this.sortData();
   }
 
+  // Sort the data using a compare function and the sortColumn and sortDirection
   private sortData(): void {
     this.data = this.data.sort((a, b) => {
       const compareValueA = a[this.sortColumn];
@@ -32,15 +63,19 @@ export class TableComponent implements OnChanges {
       return 0;
     });
   }
+  
 
-  sortTable(sortColumn: columns): void {
-    if (this.sortColumn === sortColumn) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = sortColumn;
-      this.sortDirection = 'asc';
+  // Filter the data by firstname
+  nameFilter(name: string): void {    
+
+    if (name == '') {
+      this.data = this.storedData;          
+      return;
     }
 
-    this.sortData();
+    this.data = this.storedData.filter((item) => {
+      return item.firstname.toLowerCase().startsWith(name.toLowerCase());
+    });
+    
   }
 }

@@ -12,6 +12,11 @@ export class AppComponent {
   users: User[] = [];
 
   ngOnInit() {
+    this.getUsers();
+  }
+
+  // Search for users
+  getUsers(): void {
     this.api.getUsers().subscribe({
       next: (users) => {
         this.users = users.map(

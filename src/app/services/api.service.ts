@@ -11,8 +11,8 @@ export class ApiService {
   #http = inject(HttpClient);
   #apiUrl = environment.api;
 
-  // @TODO: [GET] 
   
+  // GET users from API  
   getUsers(): Observable<User[]> {
     return this.#http.get<User[]>(`${this.#apiUrl}/users`);
   }

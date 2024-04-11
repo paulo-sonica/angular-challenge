@@ -1,4 +1,4 @@
-import { ITableData } from "src/Interfaces/ITableData";
+import { ITableData } from "src/app/Interfaces/ITableData";
 
 export class User implements ITableData{
   id: number;
