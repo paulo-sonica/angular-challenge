@@ -1,0 +1,1 @@
+export type columns = 'firstname' | 'surname' | 'username' | 'email';
